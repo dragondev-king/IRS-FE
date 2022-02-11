@@ -1,8 +1,8 @@
-import './App.css';
+import Main from './routes'
 
 function App() {
   return (
-    <>Hello world</>
+    <Main />
   );
 }
 
