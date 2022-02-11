@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 
+import DataTable from '../../components/DataTable'
 import { getData } from '../../api/call'
 
 const Filings = () => {
@@ -16,13 +17,12 @@ const Filings = () => {
     .catch((err) => console.error(err))
   }, [setFilings])
   return (
-    <>
+    <div className="container">
       {loading && <div>Loading ...</div>}
-      { !loading &&filings.map((filing, idx) => {
-
-        return <p key={idx}>{filing.filer_id} {filing.filer_name} {filing.recipient_id} {filing.recipient_name}</p>
-      })}
-    </>
+      {!loading && 
+        <DataTable data={filings} fieldNames={['filer_name', 'recipient_name']} tableName='Filings'/>
+      }
+    </div>
   )
 }
 
