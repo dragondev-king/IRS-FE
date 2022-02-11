@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 
+import DataTable from '../../components/DataTable'
 import { getData } from '../../api/call'
 
 const Awards = () => {
@@ -16,13 +17,12 @@ const Awards = () => {
     .catch((err) => console.error(err))
   }, [setAwards])
   return (
-    <>
+    <div className="container">
       {loading && <div>Loading ...</div>}
-      { !loading &&awards.map((award, idx) => {
-
-        return <p key={idx}>{award.amount} {award.purpose} {award.taxperiod} {award.filing_id}</p>
-      })}
-    </>
+      {!loading && 
+        <DataTable data={awards} fieldNames={['amount', 'purpose', 'tax_period']} tableName='Awards'/>
+      }
+    </div>
   )
 }
 
