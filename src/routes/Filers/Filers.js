@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react"
 
 import DataTable from "../../components/DataTable"
+import SideBar from "../../components/SideBar"
 import { getData } from "../../api/call"
+import { sideBarItems, organizationFields } from "../../constants"
 
 const Filers = () => {
   const [loading, setLoading] = useState(true)
@@ -17,10 +19,17 @@ const Filers = () => {
   }, [setFilers])
   return (
     <div className="container">
-      {loading && <div>Loading ...</div>}
-      {!loading && 
-        <DataTable data={filers} fieldNames={['ein', 'name', 'address', 'city', 'city', 'zipcode']} tableName='Filers'/>
-      }
+      <div className="row"> 
+        <div className="col-3">
+          <SideBar items={sideBarItems}/>
+        </div>
+        <div className="col-9">
+          {loading && <div>Loading ...</div>}
+          {!loading && 
+            <DataTable data={filers} fieldNames={organizationFields} tableName='Filers'/>
+          }
+        </div>
+      </div>
     </div>
   )
 }
