@@ -63,6 +63,7 @@ const Filings = () => {
       <div className="row"> 
         <div className="col-3">
           <SideBar items={sideBarItems} />
+          <p className='mt-5'>Select Filer</p>
           <Filter options={filerOptions} onFilterChange={handleFilerChange} />
         </div>
         <div className="col-9">
