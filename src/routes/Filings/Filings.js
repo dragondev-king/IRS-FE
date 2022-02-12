@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 import DataTable from '../../components/DataTable'
 import SideBar from '../../components/SideBar'
@@ -10,6 +11,7 @@ const Filings = () => {
   const [loading, setLoading] = useState(true)
   const [filings, setFilings] = useState([])
   const [filers, setFilers] = useState([])
+  const [searchParams, setSearchParams] = useSearchParams()
   
   useEffect(() => {
     setLoading(true)
@@ -38,12 +40,30 @@ const Filings = () => {
   ],[filers]
   )
 
+  const handleFilerChange = useCallback((id) => {
+    if (id) {
+      setSearchParams({filer: id})
+    } else {
+      setSearchParams({})
+    }
+  }, [setSearchParams])
+
+  useEffect(() => {
+    setLoading(true)
+    getData({url: '/filings', params: searchParams})
+    .then((data) => {
+      setFilings(data)
+      setLoading(false)
+    })
+    .catch((err) => console.error(err))
+  }, [searchParams])
+
   return (
     <div className="container">
       <div className="row"> 
         <div className="col-3">
-          <SideBar items={sideBarItems}/>
-          <Filter options={filerOptions} />
+          <SideBar items={sideBarItems} />
+          <Filter options={filerOptions} onFilterChange={handleFilerChange} />
         </div>
         <div className="col-9">
           {loading && <div>Loading ...</div>}
