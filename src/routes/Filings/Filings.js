@@ -12,7 +12,9 @@ const Filings = () => {
   const [filings, setFilings] = useState([])
   const [filers, setFilers] = useState([])
   const [searchParams, setSearchParams] = useSearchParams()
-  
+  const [selectedItem, setSelectedItem] = useState()
+
+
   useEffect(() => {
     setLoading(true)
     getData({url: '/filings'})
@@ -40,11 +42,13 @@ const Filings = () => {
   ],[filers]
   )
 
-  const handleFilerChange = useCallback((id) => {
-    if (id) {
-      setSearchParams({filer: id})
+  const handleFilerChange = useCallback((option) => {
+    if (option?.value) {
+      setSearchParams({filer: option?.value})
+      setSelectedItem(option)
     } else {
       setSearchParams({})
+      setSelectedItem()
     }
   }, [setSearchParams])
 
@@ -64,7 +68,7 @@ const Filings = () => {
         <div className="col-3">
           <SideBar items={sideBarItems} />
           <p className='mt-5'>Select Filer</p>
-          <Filter options={filerOptions} onFilterChange={handleFilerChange} />
+          <Filter options={filerOptions} onFilterChange={handleFilerChange} selectedValue={selectedItem}/>
         </div>
         <div className="col-9">
           {loading && <div>Loading ...</div>}

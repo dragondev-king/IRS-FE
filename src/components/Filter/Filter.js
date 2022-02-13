@@ -1,15 +1,13 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import Select from "react-select"
 
-const Filter = ({ options, onFilterChange }) => {
-  const [selectedItem, setSelectedItem] = useState()
+const Filter = ({ options, onFilterChange, selectedValue }) => {
   const handleChange = useCallback((option) => {
-    setSelectedItem(option)
-    onFilterChange(option.value)
+    onFilterChange(option)
   }, [onFilterChange])
   return (
     <Select
-      value={selectedItem}
+      value={selectedValue}
       onChange={handleChange}
       options={options}
     />
