@@ -11,12 +11,16 @@ const Recipients = () => {
   const [loading, setLoading] = useState(true)
   const [recipients, setRecipients] = useState([])
   const [filings, setFilings] = useState([])
+  const [initialRecipients, setInitialRecipients] = useState([])
   const [searchParams, setSearchParams] = useSearchParams({})
+
+  const queryObj = useMemo(() => Object.fromEntries([...searchParams]), [searchParams]) 
   
   useEffect(() => {
     setLoading(true)
     getData({url: '/recipients'})
     .then((data) => {
+      setInitialRecipients(data)
       setRecipients(data)
       setLoading(false)
     })
@@ -36,13 +40,13 @@ const Recipients = () => {
   const filingOptions = useMemo(() =>[
     {label: 'All', value: ''},
     ...filings ? filings.map((filing) => ({
+      label: filing.id.toString(),
       value: filing.id,
-      label: filing.id.toString()
     })) : []
   ],[filings]
   )
 
-  const statesArray = useMemo(() => recipients.map(recipient => recipient.state), [recipients])
+  const statesArray = useMemo(() => initialRecipients.map(recipient => recipient.state), [initialRecipients])
   const stateOptions = useMemo(() =>[
     {label: 'All', value: ''},
     ...Array.from(new Set(statesArray)).map((state) => ({
@@ -52,39 +56,43 @@ const Recipients = () => {
   ],[statesArray]
   )
 
+  const amountArray = useMemo(() => filings.map((filing) => filing.amount), [filings])
   const amountOptions = useMemo(() =>[
     {label: 'All', value: ''},
-    ...filings ? filings.map((filing) => ({
-      value: filing.amount,
-      label: filing.amount.toString()
-    })) : []
-  ],[filings]
+    ...Array.from(new Set(amountArray)).map((amount) => ({
+      value: amount,
+      label: amount.toString()
+    }))
+  ],[amountArray]
   )
 
-  const handleFilingChange = useCallback((id) => {
+  const handleFilingChange = useCallback((option) => {
     const params = Object.fromEntries([...searchParams])
-    if (id) {
-      setSearchParams({...params, filing: id})
+    if (option?.value) {
+      setSearchParams({...params, filing: option?.value})
     } else {
-      setSearchParams({})
+      delete params['filing']
+      setSearchParams(params)
     }
   }, [setSearchParams, searchParams])
 
-  const handleAmountChange = useCallback((amount) => {
+  const handleAmountChange = useCallback((option) => {
     const params = Object.fromEntries([...searchParams])
-    if (amount) {
-      setSearchParams({...params, amount})
+    if (option?.value) {
+      setSearchParams({...params, amount: option?.value})
     } else {
-      setSearchParams({})
+      delete params['amount']
+      setSearchParams(params)
     }
   }, [setSearchParams, searchParams])
 
-  const handleStateChange = useCallback((state) => {
+  const handleStateChange = useCallback((option) => {
     const params = Object.fromEntries([...searchParams])
-    if (state) {
-      setSearchParams({...params, state})
+    if (option?.value) {
+      setSearchParams({...params, state: option?.value})
     } else {
-      setSearchParams({})
+      delete params['state']
+      setSearchParams(params)
     }
   }, [setSearchParams, searchParams])
 
@@ -104,11 +112,11 @@ const Recipients = () => {
         <div className="col-3">
           <SideBar items={sideBarItems}/>
           <p className="mt-5">Select Filing ID</p>
-          { !loading &&<Filter options={filingOptions} onFilterChange={handleFilingChange} />}
+          { !loading &&<Filter options={filingOptions} onFilterChange={handleFilingChange} selectedValue={{label: queryObj.filing?.toString(), value: queryObj.filing}} />}
           <p className="mt-2">Select Amount</p>
-          { !loading &&<Filter options={amountOptions} onFilterChange={handleAmountChange} />}
+          { !loading &&<Filter options={amountOptions} onFilterChange={handleAmountChange} selectedValue={{label: queryObj.amount?.toString(), value: queryObj.amount}} />}
           <p className="mt-2">Select State</p>
-            { !loading &&<Filter options={stateOptions} onFilterChange={handleStateChange} />}
+            { !loading &&<Filter options={stateOptions} onFilterChange={handleStateChange} selectedValue={{label: queryObj.state, value: queryObj.state}}/>}
         </div>
         <div className="col-9">
           {loading && <div>Loading ...</div>}
